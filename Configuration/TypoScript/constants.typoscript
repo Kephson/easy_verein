@@ -1,0 +1,14 @@
+plugin.tx_easyverein_login {
+    view {
+        # cat=plugin.tx_easyverein_login/file; type=string; label=Path to template root (FE)
+        templateRootPath = EXT:easy_verein/Resources/Private/Templates/
+        # cat=plugin.tx_easyverein_login/file; type=string; label=Path to template partials (FE)
+        partialRootPath = EXT:easy_verein/Resources/Private/Partials/
+        # cat=plugin.tx_easyverein_login/file; type=string; label=Path to template layouts (FE)
+        layoutRootPath = EXT:easy_verein/Resources/Private/Layouts/
+    }
+    persistence {
+        # cat=plugin.tx_easyverein_login//a; type=string; label=Default storage PID
+        storagePid =
+    }
+}

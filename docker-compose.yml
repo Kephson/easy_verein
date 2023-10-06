@@ -1,0 +1,10 @@
+version: '3'
+services:
+  t3docmake:
+    image: t3docs/render-documentation:latest
+    command: makehtml
+    volumes:
+      - ./:/PROJECT:ro
+      - ./Documentation-GENERATED-temp:/RESULT
+# https://docs.typo3.org/m/typo3/docs-how-to-document/main/en-us/RenderingDocs/Index.html
+# run with "docker composer up"

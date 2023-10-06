@@ -1,0 +1,15 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: true
+
+  EHAERER\EasyVerein\:
+    resource: '../Classes/*'
+
+  EHAERER\EasyVerein\Command\SyncFeUser:
+    tags:
+      - name: 'console.command'
+        command: 'easyverein:syncfeuser'
+        description: 'Synchronize fe_users with easyVerein'
+        hidden: false

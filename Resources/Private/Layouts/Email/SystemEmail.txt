@@ -1,0 +1,11 @@
+﻿<f:spaceless><f:render section="Title" optional="true" />
+<f:render section="Main" /></f:spaceless>
+--------------------------------
+Diese E-Mail wurde von {typo3.sitename} über folgende Adresse versendet: {normalizedParams.siteUrl}
+Bitte kontaktiere uns über info@meinverein.de sollte es sich hierbei um einen Fehler handeln.
+--------------------------------
+MeinVerein e.V
+Name der Vorsitzenden
+Meine Straße 123
+12345 MeinOrt
+Deutschland

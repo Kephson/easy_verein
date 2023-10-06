@@ -1,0 +1,6 @@
+Hallo {user.first_name} {user.last_name},
+dein Account für den Mitgliederbereich der Webseite wurde angelegt.
+
+Dein Benutzername (Mitgliedsnummer) lautet: {user.username}
+Fordere jetzt einen Link zum Setzen des neuen Passworts hier an:
+{pwForgetLink}

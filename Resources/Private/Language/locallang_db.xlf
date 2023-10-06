@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="EXT:ezfg_member/Resources/Private/Language/locallang_db" date="2022-12-27T17:33:40Z" product-name="easy_verein">
+		<header />
+		<body>
+			<trans-unit id="fe_users.easyverein_pk" resname="fe_users.easyverein_pk">
+				<source>easyVerein primary key</source>
+			</trans-unit>
+			<trans-unit id="fe_groups.easyverein_g_short" resname="fe_groups.easyverein_g_short">
+				<source>easyVerein group shortcode</source>
+			</trans-unit>
+			<trans-unit id="fe_users.welcome_mail" resname="fe_users.welcome_mail">
+				<source>Send welcome mail to user</source>
+			</trans-unit>
+			<trans-unit id="fe_users.welcome_mail_sent" resname="fe_users.welcome_mail_sent">
+				<source>Last welcome mail sent</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

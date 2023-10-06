@@ -1,0 +1,36 @@
+.. ==================================================
+.. FOR YOUR INFORMATION
+.. --------------------------------------------------
+.. -*- coding: utf-8 -*- with BOM.
+
+.. This is 'Includes.txt'. It is included at the very top of each and
+   every ReST source file in this documentation project (= manual).
+
+
+.. ==================================================
+.. DEFINE SOME TEXT ROLES
+.. --------------------------------------------------
+
+.. role::   typoscript(code)
+
+.. role::   ts(typoscript)
+   :class:  typoscript
+
+.. role::   php(code)
+
+.. role::   yaml(code)
+
+.. role:: html(code)
+
+
+.. highlight:: php
+
+.. |img-extension-configuration|      image:: /Images/Administration/extension-configuration.png
+.. :border: 0
+.. :align: left
+.. :name: Extension Configuration
+
+.. |img-scheduler-initial-sync|      image:: /Images/Scheduler/scheduler-initial-sync.png
+.. :border: 0
+.. :align: left
+.. :name: Initial synchronization task in scheduler

@@ -1,0 +1,24 @@
+# cat=easyVerein; type=string; label=easyVerein API Token
+easy_verein_api_token =
+# cat=easyVerein; type=integer; label=Default request limit of queries
+easy_verein_request_limit = 100
+# cat=typo3; type=integer; label=Default group id of TYPO3 frontend users
+typo3_default_group_id = 1
+# cat=typo3; type=integer; label=Default storage folder of TYPO3 frontend users
+typo3_default_user_pid = 1
+# cat=typo3; type=integer; label=Page id of password forget page
+password_forget_page_uid = 1
+# cat=welcomeemail; type=string; label=Welcome email sent title
+welcome_mail_sent_title = Email sent
+# cat=welcomeemail; type=string; label=Welcome email sent text
+welcome_mail_sent_text = New welcome email sent
+# cat=welcomeemail; type=string; label=Welcome email not sent title
+welcome_mail_not_sent_title = Error when sending welcome email
+# cat=welcomeemail; type=string; label=Welcome email not sent text
+welcome_mail_not_sent_text = No welcome email sent
+# cat=welcomeemail; type=string; label=Welcome email sender email address
+welcome_mail_from_email = mywebseite@meinverein.de
+# cat=welcomeemail; type=string; label=Welcome email sender name
+welcome_mail_from_name = My association website
+# cat=welcomeemail; type=string; label=Welcome email subject
+welcome_mail_from_subject = Welcome to member area at my association

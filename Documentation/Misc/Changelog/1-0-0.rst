@@ -1,0 +1,24 @@
+1.0.0 - 6 of October 2023
+=========================
+
+.. include:: ../../Includes.txt
+
+.. only:: html
+
+.. contents::
+        :local:
+        :depth: 3
+
+
+Important changes
+-----------------
+
+All Changes
+-----------
+This is a list of all changes in this release: ::
+
+- added welcome email to enable sendout of email if new user was created
+- updated synchronizing of members and optimized number of requests against easyVerein
+- updated synchronizing of members and changed order to sync newest members first
+- updated synchronizing task
+- checked jobs and fixed scheduler task

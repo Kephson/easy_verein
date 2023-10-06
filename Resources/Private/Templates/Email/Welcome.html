@@ -1,0 +1,10 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+<f:layout name="SystemEmail" />
+<f:section name="Main">
+    <p>Hallo {user.first_name} {user.last_name},</p>
+    <p>dein Account für den Mitgliederbereich der Webseite wurde angelegt.</p>
+    <p>Dein Benutzername (Mitgliedsnummer) lautet: {user.username}</p>
+    <p>Fordere jetzt einen Link zum Setzen des neuen Passworts hier an:</p>
+    <p><a href="{pwForgetLink}" target="_blank">Link hier anfordern</a></p>
+</f:section>
+</html>
