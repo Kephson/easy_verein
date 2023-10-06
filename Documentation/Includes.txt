@@ -25,12 +25,12 @@
 
 .. highlight:: php
 
-.. |img-extension-configuration|      image:: /Images/Administration/extension-configuration.png
+.. |img-extension-configuration| image:: /Images/Administration/extension-configuration.png
 .. :border: 0
 .. :align: left
 .. :name: Extension Configuration
 
-.. |img-scheduler-initial-sync|      image:: /Images/Scheduler/scheduler-initial-sync.png
+.. |img-scheduler-initial-sync| image:: /Images/Scheduler/scheduler-initial-sync.png
 .. :border: 0
 .. :align: left
 .. :name: Initial synchronization task in scheduler

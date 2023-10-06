@@ -210,7 +210,7 @@ class SyncFeUser extends Command
     {
         $query = '{id,contactDetails{id,firstName,familyName,name,privateEmail},joinDate,resignationDate,memberGroups{memberGroup{id,short,name}},membershipNumber}';
         $ordering = '-membershipNumber';
-        $uri = 'https://easyverein.com/api/stable/member?query=' . $query . '&limit=' . $limit . '&ordering=' . $ordering;
+        $uri = $this->extSettings['easy_verein_api_uri'] . '/' . 'member?query=' . $query . '&limit=' . $limit . '&ordering=' . $ordering;
         if (!empty($next)) {
             $uri = $next;
         }
@@ -504,7 +504,7 @@ class SyncFeUser extends Command
     private function loadUserGroups(int $limit = 100): void
     {
         if (empty($this->memberGroups)) {
-            $uri = 'https://easyverein.com/api/stable/member-group/?limit=' . $limit;
+            $uri = $this->extSettings['easy_verein_api_uri'] . '/' . 'member-group/?limit=' . $limit;
             $groups = $this->getApiResults($uri);
             $tableName = 'fe_groups';
             if (isset($groups['results'])) {
