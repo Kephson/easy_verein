@@ -1,7 +1,6 @@
 {
 	"name": "ehaerer/easy-verein",
 	"type": "typo3-cms-extension",
-	"version": "1.0.0",
 	"description": "Extension to connect TYPO3 with easyVerein association management software",
 	"homepage": "https://ephra.im",
 	"license": "GPL-2.0-or-later",
