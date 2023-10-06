@@ -29,11 +29,14 @@ With default settings it is only needed to set the API token here.
 Tab: Typo3
 ^^^^^^^^^^
 
-- Set the default uid of your frontend users (members) here.
-- Set the default storage pid of your frontend users.
-- Set page uid of password forget page. It is used in the welcome email to the users.
+- Set the default uid of your frontend users (members) here
+- Set the default storage pid of your frontend users
+- Set page uid of password forget page; It is used in the welcome email to the users
+- Enable or disable sending of welcome email after user import
 
 All these settings should be done.
+
+|img-extension-configuration-tab-2|
 
 Tab: Welcomemail
 ^^^^^^^^^^^^^^^^
@@ -43,3 +46,5 @@ Tab: Welcomemail
 - Set a specific mail subject
 
 All these settings should be done if the default should be overwritten.
+
+|img-extension-configuration-tab-3|

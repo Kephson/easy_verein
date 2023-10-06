@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EHAERER\EasyVerein\Command;
 
 use Doctrine\DBAL\DBALException;
+use EHAERER\EasyVerein\Service\WelcomeEmail;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use PDO;
@@ -12,6 +13,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotConfiguredException;
 use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
@@ -20,6 +22,7 @@ use TYPO3\CMS\Core\Crypto\PasswordHashing\PasswordHashFactory;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\Exception;
 
 /**
  * This file is part of the "Manage the members of the society" Extension for TYPO3 CMS.
@@ -432,6 +435,9 @@ class SyncFeUser extends Command
                         if ($deleted === 1) {
                             $return['deletedMembers']++;
                         }
+                        if ($this->extSettings['typo3_send_welcome_email'] === 1) {
+                            WelcomeEmail::sendWelcomeEmail($newUser, $this->extSettings);
+                        }
                     }
                 }
 
@@ -447,7 +453,6 @@ class SyncFeUser extends Command
      * @param array $member
      *
      * @return string
-     * @throws GuzzleException
      */
     private function getEvUserGroups(array $member): string
     {

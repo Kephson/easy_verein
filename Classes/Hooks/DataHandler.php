@@ -13,13 +13,9 @@ use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\SingletonInterface;
-use Symfony\Component\Mime\Address;
-use TYPO3\CMS\Core\Mail\FluidEmail;
-use TYPO3\CMS\Core\Mail\Mailer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use TYPO3\CMS\Extbase\Object\Exception;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
+use EHAERER\EasyVerein\Service\WelcomeEmail;
 
 
 /**
@@ -61,14 +57,14 @@ class DataHandler implements SingletonInterface
      * @throws ExtensionConfigurationExtensionNotConfiguredException
      * @throws ExtensionConfigurationPathDoesNotExistException
      */
-    public function processDatamap_preProcessFieldArray(array &$fieldArray, string $table, $id, CoreDataHandler $parentObject)
+    public function processDatamap_preProcessFieldArray(array &$fieldArray, string $table, $id, CoreDataHandler $parentObject): void
     {
         if ($table === 'fe_users') {
             if (isset($fieldArray['welcome_mail']) && (int)$fieldArray['welcome_mail'] === 1) {
 
                 $this->extSettings = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get(self::EXTKEY);
 
-                if ($this->sendWelcomeEmail($fieldArray)) {
+                if (WelcomeEmail::sendWelcomeEmail($fieldArray, $this->extSettings)) {
                     $message = GeneralUtility::makeInstance(FlashMessage::class,
                         $this->extSettings['welcome_mail_sent_text'],
                         $this->extSettings['welcome_mail_sent_title'],
@@ -91,57 +87,6 @@ class DataHandler implements SingletonInterface
             }
 
         }
-
-    }
-
-    /**
-     * send email to user
-     *
-     * @param array $fieldArray
-     *
-     * @return bool
-     * @throws TransportExceptionInterface|Exception
-     */
-    protected function sendWelcomeEmail($fieldArray)
-    {
-        if (isset($fieldArray['email'], $fieldArray['name']) && !empty($fieldArray['email']) && !empty($fieldArray['name'])) {
-            $email = GeneralUtility::makeInstance(FluidEmail::class);
-            $email
-                ->to($fieldArray['email'])
-                ->from(new Address($this->extSettings['welcome_mail_from_email'], $this->extSettings['welcome_mail_from_name']))
-                ->subject($this->extSettings['welcome_mail_from_subject'])
-                ->format('both')
-                ->setTemplate('Welcome')
-                ->assignMultiple([
-                    'user' => $fieldArray,
-                    'pwForgetLink' => $this->generateLinkToPasswordForgottenPage(),
-                ]);
-            GeneralUtility::makeInstance(Mailer::class)->send($email);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * @return string
-     * @throws Exception
-     */
-    protected function generateLinkToPasswordForgottenPage()
-    {
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $uriBuilder = $objectManager->get(UriBuilder::class);
-        $uri = $uriBuilder
-            ->reset()
-            ->setTargetPageUid((int)$this->extSettings['password_forget_page_uid'])
-            ->setArguments([
-                'tx_felogin_login' => [
-                    'controller' => 'PasswordRecovery',
-                    'action' => 'recovery',
-                ],
-            ])
-            ->setCreateAbsoluteUri(true)
-            ->buildFrontendUri();
-        return $uri;
     }
 
 }
