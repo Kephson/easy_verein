@@ -13,5 +13,5 @@ CREATE TABLE fe_users
 #
 CREATE TABLE fe_groups
 (
-	easyverein_g_short varchar(10) NOT NULL DEFAULT '',
+	easyverein_g_short varchar(10) NOT NULL DEFAULT ''
 );

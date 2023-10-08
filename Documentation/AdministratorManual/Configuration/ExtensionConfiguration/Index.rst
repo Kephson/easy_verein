@@ -48,3 +48,12 @@ Tab: Welcomemail
 All these settings should be done if the default should be overwritten.
 
 |img-extension-configuration-tab-3|
+
+
+.. caution::
+   | To have a working mail configuration, please make sure to set
+   | $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress']
+   | $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromName']
+   | $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailReplyToAddress']
+   | $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailReplyToName']
+   | in the global TYPO3 system settings.

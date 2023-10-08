@@ -7,4 +7,4 @@ services:
       - ./:/PROJECT:ro
       - ./Documentation-GENERATED-temp:/RESULT
 # https://docs.typo3.org/m/typo3/docs-how-to-document/main/en-us/RenderingDocs/Index.html
-# run with "docker composer up"
+# run with "docker compose up"

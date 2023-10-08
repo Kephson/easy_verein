@@ -268,7 +268,7 @@ class SyncFeUser extends Command
                 if (isset($r['typo3Email'])) {
                     if ($i === 0) {
                         $this->output->writeln('--------------------------------------------------');
-                        $this->output->writeln('Found follwing different E-Mail Adresses:');
+                        $this->output->writeln('Found following different E-Mail addresses:');
                     }
                     $typo3Email = $r['typo3Email'];
                     $email = $r['contactDetails']['privateEmail'];
@@ -434,8 +434,7 @@ class SyncFeUser extends Command
                         $return['addedMembers']++;
                         if ($deleted === 1) {
                             $return['deletedMembers']++;
-                        }
-                        if ($this->extSettings['typo3_send_welcome_email'] === 1) {
+                        } elseif ($this->extSettings['typo3_send_welcome_email']) {
                             WelcomeEmail::sendWelcomeEmail($newUser, $this->extSettings);
                         }
                     }

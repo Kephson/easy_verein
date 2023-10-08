@@ -50,8 +50,8 @@ easyVerein
 	:titlesonly:
 	:glob:
 
-	Introduction/Index
-	UsersManual/Index
-	AdministratorManual/Index
-	DeveloperManual/Index
-	Misc/Index
+   Introduction/Index
+   AdministratorManual/Index
+   IntegratorManual/Index
+   DeveloperManual/Index
+   Misc/Index

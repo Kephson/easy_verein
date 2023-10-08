@@ -44,3 +44,13 @@
 .. :border: 0
 .. :align: left
 .. :name: Initial synchronization task in scheduler
+
+.. |img-configure-easyverein-groupcode| image:: /Images/Administration/configure-easyverein-groupcode.png
+.. :border: 0
+.. :align: left
+.. :name: Set groupcode of easyVerein to TYPO3 groups
+
+.. |img-manually-send-welcome-email| image:: /Images/Administration/manually-send-welcome-email.png
+.. :border: 0
+.. :align: left
+.. :name: Manually send welcome email to a user
