@@ -33,7 +33,8 @@ To have the easyVerein groups synchronized with your TYPO3 frontend user groups,
 Do an initial synchronization of members
 ----------------------------------------
 Synchronize your easyVerein members to TYPO3 in a first step to have them in your TYPO3 database.
-Go to TYPO3 scheduler and configure a new "execute console commands" jobs and select as command easyverein:syncfeuser with the options "--initial=0 --syncAll=1".
+Go to TYPO3 scheduler and configure a new "execute console commands" jobs and select as command `easyverein:syncfeuser` with the options `--initial=1 --syncAll=1`.
+You can also execute this command directly on command line with `typo3 easyverein:syncfeuser --initial=1 --syncAll=1`.
 
 |img-scheduler-initial-sync|
 
@@ -48,3 +49,14 @@ If you want to send a welcome email manually to a member, you can do this in his
 After saving the "Last welcome mail sent" field will be updated and the member will get an email.
 
 |img-manually-send-welcome-email|
+
+.. _howToStartInitialSync:
+
+Update scheduler task to synchronize data periodically
+------------------------------------------------------
+After initial synchronization update your scheduler task to synchronize the data periodically with easyVerein.
+Just update the option `--initial=0` to do a regular synchronization.
+Choose a repeating timeslot to execute this job, e.g. once a day (84000 seconds).
+You can also execute this command directly on command line with `typo3 easyverein:syncfeuser --initial=0 --syncAll=1`
+
+|img-scheduler-recurring-sync|

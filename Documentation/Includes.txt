@@ -54,3 +54,8 @@
 .. :border: 0
 .. :align: left
 .. :name: Manually send welcome email to a user
+
+.. |img-scheduler-recurring-sync| image:: /Images/Scheduler/scheduler-recurring-sync.png
+.. :border: 0
+.. :align: left
+.. :name: Recurring synchronization task in scheduler
