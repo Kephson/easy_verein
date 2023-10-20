@@ -334,8 +334,9 @@ class SyncFeUser extends Command
      *
      * @return array
      * @throws DBALException
+     * @throws Exception
      * @throws InvalidPasswordHashException
-     * @throws GuzzleException
+     * @throws TransportExceptionInterface
      */
     private function syncronizeMembers(): array
     {

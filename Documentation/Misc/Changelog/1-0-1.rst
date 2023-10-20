@@ -1,0 +1,21 @@
+1.0.1 - 20 of October 2023
+==========================
+
+.. include:: ../../Includes.txt
+
+.. only:: html
+
+.. contents::
+        :local:
+        :depth: 3
+
+
+Important changes
+-----------------
+
+All Changes
+-----------
+This is a list of all changes in this release: ::
+
+- added timestamp update in DB after welcome email was sent
+- composer update
