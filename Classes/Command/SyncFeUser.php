@@ -435,7 +435,13 @@ class SyncFeUser extends Command
                         if ($deleted === 1) {
                             $return['deletedMembers']++;
                         } elseif ($this->extSettings['typo3_send_welcome_email']) {
-                            WelcomeEmail::sendWelcomeEmail($newUser, $this->extSettings);
+                            $mailSent = WelcomeEmail::sendWelcomeEmail($newUser, $this->extSettings);
+                            if ($mailSent) {
+                                $queryBuilder->resetQueryParts()->update($tableName, 'f')
+                                    ->where($queryBuilder->expr()->eq('f.username', $queryBuilder->createNamedParameter($memberNo)))
+                                    ->set('f.welcome_mail_sent', time())
+                                    ->executeStatement();
+                            }
                         }
                     }
                 }

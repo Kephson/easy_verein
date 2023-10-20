@@ -1,28 +1,29 @@
 {
 	"name": "ehaerer/easy-verein",
-	"type": "typo3-cms-extension",
 	"description": "Extension to connect TYPO3 with easyVerein association management software",
-	"homepage": "https://ephra.im",
 	"license": "GPL-2.0-or-later",
-	"authors": [
-		{
-			"name": "Ephraim Härer",
-			"role": "Developer"
-		}
-	],
+	"type": "typo3-cms-extension",
 	"keywords": [
 		"TYPO3 CMS",
 		"Easy",
 		"Verein",
 		"API"
 	],
+	"authors": [
+		{
+			"name": "Ephraim Härer",
+			"role": "Developer"
+		}
+	],
+	"homepage": "https://ephra.im",
 	"require": {
 		"php": "~8.1.0",
+		"ext-pdo": "*",
+		"guzzlehttp/guzzle": "^7.5",
 		"typo3/cms-core": "^11.5",
 		"typo3/cms-felogin": "^11.5",
 		"typo3/cms-frontend": "^11.5",
-		"typo3/cms-scheduler": "^11.5",
-		"guzzlehttp/guzzle": "^7.5"
+		"typo3/cms-scheduler": "^11.5"
 	},
 	"require-dev": {
 		"ergebnis/composer-normalize": "^2.28",
@@ -37,9 +38,9 @@
 	},
 	"config": {
 		"allow-plugins": {
+			"ergebnis/composer-normalize": true,
 			"typo3/class-alias-loader": true,
-			"typo3/cms-composer-installers": true,
-			"ergebnis/composer-normalize": true
+			"typo3/cms-composer-installers": true
 		},
 		"bin-dir": ".Build/bin",
 		"sort-packages": true,

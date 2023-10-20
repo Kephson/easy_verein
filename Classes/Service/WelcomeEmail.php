@@ -37,7 +37,7 @@ class WelcomeEmail
      * @return bool
      * @throws TransportExceptionInterface|Exception
      */
-    public static function sendWelcomeEmail(array $fieldArray, array $extSettings)
+    public static function sendWelcomeEmail(array $fieldArray, array $extSettings): bool
     {
         if (!empty($fieldArray['email']) && !empty($fieldArray['name'])) {
             $email = GeneralUtility::makeInstance(FluidEmail::class);
