@@ -12,7 +12,7 @@ $EM_CONF[$_EXTKEY] = [
     'title' => 'TYPO3 <=> EasyVerein connector',
     'description' => 'Extension to connect TYPO3 with easyVerein association management software',
     'category' => 'plugin',
-    'version' => '1.0.1',
+    'version' => '1.0.2',
     'constraints' => [
         'depends' => [
             'typo3' => '10.4.0-11.5.99',
