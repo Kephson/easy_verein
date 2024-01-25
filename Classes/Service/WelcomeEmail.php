@@ -19,11 +19,11 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
  * For the full copyright and license information, please read the
  * LICENSE.txt file that was distributed with this source code.
  *
- * (c) 2023 Ephraim Härer <mail@ephra.im>, EPHRA.IM
+ * (c) 2023-2024 Ephraim Härer <mail@ephra.im>, EPHRA.IM
  */
 
 /**
- * Datahandler
+ * WelcomeEmail
  */
 class WelcomeEmail
 {
@@ -63,7 +63,7 @@ class WelcomeEmail
      * @return string
      * @throws Exception
      */
-    public static function generateLinkToPasswordForgottenPage(array $extSettings)
+    public static function generateLinkToPasswordForgottenPage(array $extSettings): string
     {
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $uriBuilder = $objectManager->get(UriBuilder::class);

@@ -26,3 +26,7 @@ welcome_mail_from_email = mywebseite@meinverein.de
 welcome_mail_from_name = My association website
 # cat=welcomemail; type=string; label=Welcome email subject
 welcome_mail_from_subject = Welcome to member area at my association
+# cat=easyVerein; type=string; label=Allowed fields in easyVerein member model
+easy_verein_member_fields = joinDate,membershipNumber
+# cat=easyVerein; type=string; label=Allowed fields in easyVerein contact model
+easy_verein_contact_fields = bankAccountOwner,bic,iban,methodOfPayment,methodOfPaymentName,sepaDate,street,zip,city,country,salutation,name,familyName,firstName,mobilePhone,privateEmail,privatePhone

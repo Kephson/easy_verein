@@ -17,14 +17,13 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\Exception;
 use EHAERER\EasyVerein\Service\WelcomeEmail;
 
-
 /**
  * This file is part of the "Manage the members of the society" Extension for TYPO3 CMS.
  *
  * For the full copyright and license information, please read the
  * LICENSE.txt file that was distributed with this source code.
  *
- * (c) 2023 Ephraim Härer <mail@ephra.im>, EPHRA.IM
+ * (c) 2023-2024 Ephraim Härer <mail@ephra.im>, EPHRA.IM
  */
 
 /**

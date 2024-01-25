@@ -6,7 +6,7 @@ namespace EHAERER\EasyVerein\Command;
 
 use Doctrine\DBAL\DBALException;
 use EHAERER\EasyVerein\Service\WelcomeEmail;
-use GuzzleHttp\Client;
+use EHAERER\EasyVerein\Utility\ApiUtility;
 use GuzzleHttp\Exception\GuzzleException;
 use PDO;
 use Symfony\Component\Console\Command\Command;
@@ -30,7 +30,7 @@ use TYPO3\CMS\Extbase\Object\Exception;
  * For the full copyright and license information, please read the
  * LICENSE.txt file that was distributed with this source code.
  *
- * (c) 2022-2023 Ephraim Härer <mail@ephra.im>, EPHRA.IM
+ * (c) 2022-2024 Ephraim Härer <mail@ephra.im>, EPHRA.IM
  *
  * -- Example with ddev local --
  * Initial:
@@ -98,7 +98,7 @@ class SyncFeUser extends Command
     /**
      * Configure the command by defining the name, options and arguments
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setDescription('Synchronize fe_users via easyVerein API.')
             ->addOption(
@@ -146,11 +146,15 @@ class SyncFeUser extends Command
      * @param InputInterface $input
      * @param OutputInterface $output
      * @return int error code
+     * @throws DBALException
+     * @throws Exception
      * @throws ExtensionConfigurationExtensionNotConfiguredException
      * @throws ExtensionConfigurationPathDoesNotExistException
-     * @throws GuzzleException|DBALException|InvalidPasswordHashException
+     * @throws GuzzleException
+     * @throws InvalidPasswordHashException
+     * @throws TransportExceptionInterface
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->extSettings = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get(self::EXTKEY);
         $this->options = $input->getOptions();
@@ -209,7 +213,7 @@ class SyncFeUser extends Command
      * @return void
      * @throws GuzzleException
      */
-    private function getMembers(int $limit = 100, string $next = '')
+    private function getMembers(int $limit = 100, string $next = ''): void
     {
         $query = '{id,contactDetails{id,firstName,familyName,name,privateEmail},joinDate,resignationDate,memberGroups{memberGroup{id,short,name}},membershipNumber}';
         $ordering = '-membershipNumber';
@@ -218,7 +222,7 @@ class SyncFeUser extends Command
             $uri = $next;
         }
 
-        $results = $this->getApiResults($uri);
+        $results = ApiUtility::getApiResults($uri, $this->token);
 
         if (isset($results['results'])) {
             foreach ($results['results'] as $m) {
@@ -238,7 +242,7 @@ class SyncFeUser extends Command
      *
      * @return void
      */
-    private function printMembers()
+    private function printMembers(): void
     {
         $d = " | ";
         if ($this->members) {
@@ -259,7 +263,7 @@ class SyncFeUser extends Command
      *
      * @return void
      */
-    private function printDifferentEmail()
+    private function printDifferentEmail(): void
     {
         $d = " | ";
         $i = 0;
@@ -516,7 +520,7 @@ class SyncFeUser extends Command
     {
         if (empty($this->memberGroups)) {
             $uri = $this->extSettings['easy_verein_api_uri'] . '/' . 'member-group/?limit=' . $limit;
-            $groups = $this->getApiResults($uri);
+            $groups = ApiUtility::getApiResults($uri, $this->token);
             $tableName = 'fe_groups';
             if (isset($groups['results'])) {
                 /** @var QueryBuilder $queryBuilder */
@@ -548,30 +552,4 @@ class SyncFeUser extends Command
         }
     }
 
-    /**
-     * @param string $uri
-     * @return array
-     * @throws GuzzleException
-     */
-    private function getApiResults(string $uri): array
-    {
-        $client = new Client();
-        $response = $client->request('GET', $uri, [
-            'headers' => [
-                'Authorization' => 'Token ' . $this->token,
-            ]
-        ]);
-
-        $results = [];
-        $statusCode = $response->getStatusCode();
-        $contentType = $response->getHeaderLine('content-type');
-        $rawBody = $response->getBody();
-        if ($contentType === 'application/json' && $statusCode === 200) {
-            $results = json_decode((string)$rawBody, true);
-        } else {
-            $this->output->writeln('There was an error while getting data via easyVerein API; Statuscode: ' . $statusCode);
-        }
-
-        return $results;
-    }
 }
