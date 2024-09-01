@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EHAERER\EasyVerein\Command;
 
 use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Driver\Exception as DbalDriverException;
 use EHAERER\EasyVerein\Service\WelcomeEmail;
 use EHAERER\EasyVerein\Utility\ApiUtility;
 use GuzzleHttp\Exception\GuzzleException;
@@ -153,6 +154,7 @@ class SyncFeUser extends Command
      * @throws GuzzleException
      * @throws InvalidPasswordHashException
      * @throws TransportExceptionInterface
+     * @throws DbalDriverException
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -294,6 +296,7 @@ class SyncFeUser extends Command
      *
      * @return int
      * @throws DBALException
+     * @throws DbalDriverException
      */
     private function initiallyCompareMembers(): int
     {
@@ -313,7 +316,7 @@ class SyncFeUser extends Command
                     ->from($tableName)
                     ->where(
                         $queryBuilder->expr()->eq('username', $queryBuilder->createNamedParameter($memberNo))
-                    )->execute()->fetch();
+                    )->execute()->fetchAssociative();
                 if ($user) {
                     $update = $queryBuilder->resetQueryParts()
                         ->update($tableName)
@@ -515,6 +518,7 @@ class SyncFeUser extends Command
      *
      * @return void
      * @throws GuzzleException|DBALException
+     * @throws DbalDriverException
      */
     private function loadUserGroups(int $limit = 100): void
     {
@@ -539,7 +543,7 @@ class SyncFeUser extends Command
                             ->from($tableName)
                             ->where(
                                 $queryBuilder->expr()->eq('easyverein_g_short', $queryBuilder->createNamedParameter($evGroupShort))
-                            )->execute()->fetch();
+                            )->execute()->fetchAssociative();
                         if ($group && isset($group['uid'])) {
                             $this->memberGroups[$evGroupId] = $group['uid'];
                             if ($this->printout) {
