@@ -22,6 +22,7 @@ use TYPO3\CMS\Core\Crypto\PasswordHashing\InvalidPasswordHashException;
 use TYPO3\CMS\Core\Crypto\PasswordHashing\PasswordHashFactory;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
+use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\Exception;
 
@@ -344,6 +345,7 @@ class SyncFeUser extends Command
      * @throws Exception
      * @throws InvalidPasswordHashException
      * @throws TransportExceptionInterface
+     * @throws SiteNotFoundException
      */
     private function syncronizeMembers(): array
     {
@@ -357,7 +359,6 @@ class SyncFeUser extends Command
         /** @var QueryBuilder $queryBuilder */
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($tableName);
         $queryBuilder->getRestrictions()->removeAll();
-        $welcomeMail = GeneralUtility::makeInstance(WelcomeEmail::class);
 
         if ($this->members) {
             foreach ($this->members as $r) {
@@ -444,7 +445,7 @@ class SyncFeUser extends Command
                         if ($deleted === 1) {
                             $return['deletedMembers']++;
                         } elseif ($this->extSettings['typo3_send_welcome_email']) {
-                            $mailSent = $welcomeMail->sendWelcomeEmail($newUser, $this->extSettings);
+                            $mailSent = WelcomeEmail::sendWelcomeEmail($newUser, $this->extSettings);
                             if ($mailSent) {
                                 $queryBuilder->resetQueryParts()->update($tableName, 'f')
                                     ->where($queryBuilder->expr()->eq('f.username', $queryBuilder->createNamedParameter($memberNo)))

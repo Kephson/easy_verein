@@ -1,0 +1,21 @@
+1.0.3 - 01 of September 2024
+============================
+
+.. include:: ../../Includes.txt
+
+.. only:: html
+
+.. contents::
+        :local:
+        :depth: 3
+
+
+Important changes
+-----------------
+
+All Changes
+-----------
+This is a list of all changes in this release: ::
+
+- fixed sending welcome email when executing easyVerein sync in CLI context
+- generated frontend links with Site object instead of Extbase URIBuilder

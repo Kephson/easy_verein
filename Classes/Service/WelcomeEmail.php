@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace EHAERER\EasyVerein\Service;
 
-use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mime\Address;
-use TYPO3\CMS\Core\Http\ServerRequestFactory;
+use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Mail\FluidEmail;
 use TYPO3\CMS\Core\Mail\Mailer;
+use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 
 /**
  * This file is part of the "Manage the members of the society" Extension for TYPO3 CMS.
@@ -20,6 +19,8 @@ use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
  * LICENSE.txt file that was distributed with this source code.
  *
  * (c) 2023-2024 Ephraim Härer <mail@ephra.im>, EPHRA.IM
+ *
+ * https://stackoverflow.com/questions/60724764/how-to-generate-frontend-uri-in-scheduler-command-typo3-9
  */
 
 /**
@@ -27,14 +28,6 @@ use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
  */
 class WelcomeEmail
 {
-
-    private UriBuilder $uriBuilder;
-
-    public function __construct(UriBuilder $uriBuilder)
-    {
-        $this->uriBuilder = $uriBuilder;
-    }
-
     /**
      * send email to user
      *
@@ -42,9 +35,10 @@ class WelcomeEmail
      * @param array $extSettings
      *
      * @return bool
+     * @throws SiteNotFoundException
      * @throws TransportExceptionInterface
      */
-    public function sendWelcomeEmail(array $fieldArray, array $extSettings): bool
+    public static function sendWelcomeEmail(array $fieldArray, array $extSettings): bool
     {
         if (!empty($fieldArray['email']) && !empty($fieldArray['name'])) {
             $email = GeneralUtility::makeInstance(FluidEmail::class);
@@ -56,7 +50,7 @@ class WelcomeEmail
                 ->setTemplate('Welcome')
                 ->assignMultiple([
                     'user' => $fieldArray,
-                    'pwForgetLink' => $this->generateLinkToPasswordForgottenPage($extSettings),
+                    'pwForgetLink' => self::generateLinkToPasswordForgottenPage($extSettings),
                 ]);
             GeneralUtility::makeInstance(Mailer::class)->send($email);
             return true;
@@ -68,27 +62,19 @@ class WelcomeEmail
      * @param array $extSettings
      *
      * @return string
+     * @throws SiteNotFoundException
      */
-    public function generateLinkToPasswordForgottenPage(array $extSettings): string
+    public static function generateLinkToPasswordForgottenPage(array $extSettings): string
     {
-        $uriBuilder = $this->uriBuilder;
-        if (($GLOBALS['TYPO3_REQUEST'] ?? null) instanceof ServerRequestInterface) {
-            $request = $GLOBALS['TYPO3_REQUEST'];
-        } else {
-            $request = ServerRequestFactory::fromGlobals();
-        }
-        $uriBuilder->reset()->setRequest($request);
-        return $uriBuilder
-            ->reset()
-            ->setTargetPageUid((int)$extSettings['password_forget_page_uid'])
-            ->setArguments([
-                'tx_felogin_login' => [
-                    'controller' => 'PasswordRecovery',
-                    'action' => 'recovery',
-                ],
-            ])
-            ->setCreateAbsoluteUri(true)
-            ->buildFrontendUri();
+        $pageUid = (int)$extSettings['password_forget_page_uid'];
+        $site = GeneralUtility::makeInstance(SiteFinder::class)->getSiteByPageId($pageUid);
+        $arguments = [
+            'tx_felogin_login' => [
+                'controller' => 'PasswordRecovery',
+                'action' => 'recovery',
+            ],
+        ];
+        return (string)$site->getRouter()->generateUri((string)$pageUid, $arguments);
     }
 
 }

@@ -27,7 +27,7 @@ easyVerein
 		easyVerein frontend user association member connector
 
 	:Copyright:
-		2023
+		2024
 
 	:Author:
 		Ephraim Härer

@@ -9,12 +9,12 @@ use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotCon
 use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\DataHandling\DataHandler as CoreDataHandler;
+use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\Exception;
 use EHAERER\EasyVerein\Service\WelcomeEmail;
 
 /**
@@ -51,10 +51,10 @@ class DataHandler implements SingletonInterface
      * @param $parentObject CoreDataHandler
      *
      * @return void
-     * @throws Exception
-     * @throws TransportExceptionInterface
      * @throws ExtensionConfigurationExtensionNotConfiguredException
      * @throws ExtensionConfigurationPathDoesNotExistException
+     * @throws TransportExceptionInterface
+     * @throws SiteNotFoundException
      */
     public function processDatamap_preProcessFieldArray(array &$fieldArray, string $table, $id, CoreDataHandler $parentObject): void
     {
@@ -62,9 +62,8 @@ class DataHandler implements SingletonInterface
             if (isset($fieldArray['welcome_mail']) && (int)$fieldArray['welcome_mail'] === 1) {
 
                 $this->extSettings = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get(self::EXTKEY);
-                $welcomeMail = GeneralUtility::makeInstance(WelcomeEmail::class);
 
-                if ($welcomeMail->sendWelcomeEmail($fieldArray, $this->extSettings)) {
+                if (WelcomeEmail::sendWelcomeEmail($fieldArray, $this->extSettings)) {
                     $message = GeneralUtility::makeInstance(FlashMessage::class,
                         $this->extSettings['welcome_mail_sent_text'],
                         $this->extSettings['welcome_mail_sent_title'],

@@ -1,0 +1,20 @@
+1.0.2 - 8 of November 2023
+==========================
+
+.. include:: ../../Includes.txt
+
+.. only:: html
+
+.. contents::
+        :local:
+        :depth: 3
+
+
+Important changes
+-----------------
+
+All Changes
+-----------
+This is a list of all changes in this release: ::
+
+- Changed PHP version requirement to ^8.0 Latest
