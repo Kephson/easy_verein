@@ -62,8 +62,9 @@ class DataHandler implements SingletonInterface
             if (isset($fieldArray['welcome_mail']) && (int)$fieldArray['welcome_mail'] === 1) {
 
                 $this->extSettings = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get(self::EXTKEY);
+                $welcomeMail = GeneralUtility::makeInstance(WelcomeEmail::class);
 
-                if (WelcomeEmail::sendWelcomeEmail($fieldArray, $this->extSettings)) {
+                if ($welcomeMail->sendWelcomeEmail($fieldArray, $this->extSettings)) {
                     $message = GeneralUtility::makeInstance(FlashMessage::class,
                         $this->extSettings['welcome_mail_sent_text'],
                         $this->extSettings['welcome_mail_sent_title'],

@@ -357,6 +357,7 @@ class SyncFeUser extends Command
         /** @var QueryBuilder $queryBuilder */
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($tableName);
         $queryBuilder->getRestrictions()->removeAll();
+        $welcomeMail = GeneralUtility::makeInstance(WelcomeEmail::class);
 
         if ($this->members) {
             foreach ($this->members as $r) {
@@ -443,7 +444,7 @@ class SyncFeUser extends Command
                         if ($deleted === 1) {
                             $return['deletedMembers']++;
                         } elseif ($this->extSettings['typo3_send_welcome_email']) {
-                            $mailSent = WelcomeEmail::sendWelcomeEmail($newUser, $this->extSettings);
+                            $mailSent = $welcomeMail->sendWelcomeEmail($newUser, $this->extSettings);
                             if ($mailSent) {
                                 $queryBuilder->resetQueryParts()->update($tableName, 'f')
                                     ->where($queryBuilder->expr()->eq('f.username', $queryBuilder->createNamedParameter($memberNo)))
