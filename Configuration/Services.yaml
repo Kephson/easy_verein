@@ -13,3 +13,7 @@ services:
         command: 'easyverein:syncfeuser'
         description: 'Synchronize fe_users with easyVerein'
         hidden: false
+
+  EHAERER\EasyVerein\Service\WelcomeEmail:
+    arguments:
+      $uriBuilder: '@TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder'
