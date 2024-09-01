@@ -31,7 +31,7 @@ class WelcomeEmail
 
     private static UriBuilder $uriBuilder;
 
-    public function injectUriBuilder(UriBuilder $uriBuilder): void
+    public function __construct(UriBuilder $uriBuilder)
     {
         self::$uriBuilder = $uriBuilder;
     }
