@@ -87,6 +87,11 @@ class SyncFeUser extends Command
     private array $memberGroups = [];
 
     /**
+     * @var array result of old groups in TYPO3
+     */
+    private array $oldMemberGroups = [];
+
+    /**
      * @var OutputInterface Output interface
      */
     private OutputInterface $output;
@@ -342,10 +347,10 @@ class SyncFeUser extends Command
      *
      * @return array
      * @throws DBALException
-     * @throws Exception
      * @throws InvalidPasswordHashException
      * @throws TransportExceptionInterface
      * @throws SiteNotFoundException
+     * @throws DbalDriverException
      */
     private function syncronizeMembers(): array
     {
@@ -389,7 +394,7 @@ class SyncFeUser extends Command
                     ->from($tableName)
                     ->where(
                         $queryBuilder->expr()->eq('easyverein_pk', $queryBuilder->createNamedParameter($easyVereinPk, PDO::PARAM_INT))
-                    )->execute()->fetch();
+                    )->execute()->fetchAssociative();
 
                 if ($user && isset($user['uid'])) {
                     $userGroup = $this->mergeUsergroups($evUserGroup, $user['usergroup']);
@@ -475,8 +480,8 @@ class SyncFeUser extends Command
 
         if (isset($member['memberGroups']) && is_array($member['memberGroups'])) {
             foreach ($member['memberGroups'] as $g) {
-                if (isset($g['id'], $this->memberGroups[$g['id']])) {
-                    $userGroup .= ',' . $this->memberGroups[$g['id']];
+                if (isset($g['memberGroup']['id'], $this->memberGroups[$g['memberGroup']['id']])) {
+                    $userGroup .= ',' . $this->memberGroups[$g['memberGroup']['id']];
                 }
             }
         }
@@ -497,14 +502,17 @@ class SyncFeUser extends Command
         $newUsergroups = explode(',', $newUsergroup);
         $oldUsergroups = explode(',', $oldUsergroup);
 
-        foreach ($newUsergroups as $n) {
-            $id = (int)$n;
+        foreach ($oldUsergroups as $o) {
+            $id = (int)$o;
             if (!isset($userGroups[$id])) {
                 $userGroups[$id] = $id;
             }
+            if (isset($this->oldMemberGroups[$id])) {
+                unset($userGroups[$id]);
+            }
         }
-        foreach ($oldUsergroups as $o) {
-            $id = (int)$o;
+        foreach ($newUsergroups as $n) {
+            $id = (int)$n;
             if (!isset($userGroups[$id])) {
                 $userGroups[$id] = $id;
             }
@@ -548,6 +556,7 @@ class SyncFeUser extends Command
                             )->execute()->fetchAssociative();
                         if ($group && isset($group['uid'])) {
                             $this->memberGroups[$evGroupId] = $group['uid'];
+                            $this->oldMemberGroups[$group['uid']] = $g['short'];
                             if ($this->printout) {
                                 $this->output->writeln('Group: ' . $group['title'] . ' | easyVerein group ID: ' . $evGroupId . ' | TYPO3 ID: ' . $group['uid']);
                             }

@@ -1,0 +1,20 @@
+1.0.4 - 30 of September 2024
+============================
+
+.. include:: ../../Includes.txt
+
+.. only:: html
+
+.. contents::
+        :local:
+        :depth: 3
+
+
+Important changes
+-----------------
+
+All Changes
+-----------
+This is a list of all changes in this release: ::
+
+- fixed merging old and new groups with fe groups in TYPO3
