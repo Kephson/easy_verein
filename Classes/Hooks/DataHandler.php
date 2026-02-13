@@ -14,6 +14,7 @@ use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use EHAERER\EasyVerein\Service\WelcomeEmail;
 
@@ -23,11 +24,11 @@ use EHAERER\EasyVerein\Service\WelcomeEmail;
  * For the full copyright and license information, please read the
  * LICENSE.txt file that was distributed with this source code.
  *
- * (c) 2023-2024 Ephraim Härer <mail@ephra.im>, EPHRA.IM
+ * (c) 2023-2026 Ephraim Härer <mail@ephra.im>, EPHRA.IM
  */
 
 /**
- * Datahandler
+ * DataHandler
  */
 class DataHandler implements SingletonInterface
 {
@@ -35,12 +36,6 @@ class DataHandler implements SingletonInterface
      * the extension key
      */
     const EXTKEY = 'easy_verein';
-
-    /**
-     * Extension settings
-     * @var array
-     */
-    private array $extSettings = [];
 
     /**
      * check if there should be written special fields
@@ -61,20 +56,21 @@ class DataHandler implements SingletonInterface
         if ($table === 'fe_users') {
             if (isset($fieldArray['welcome_mail']) && (int)$fieldArray['welcome_mail'] === 1) {
 
-                $this->extSettings = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get(self::EXTKEY);
+                $extSettings = [];
+                $extSettings = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get(self::EXTKEY);
 
-                if (WelcomeEmail::sendWelcomeEmail($fieldArray, $this->extSettings)) {
+                if (WelcomeEmail::sendWelcomeEmail($fieldArray, $extSettings)) {
                     $message = GeneralUtility::makeInstance(FlashMessage::class,
-                        $this->extSettings['welcome_mail_sent_text'],
-                        $this->extSettings['welcome_mail_sent_title'],
-                        AbstractMessage::OK,
+                        $extSettings['welcome_mail_sent_text'],
+                        $extSettings['welcome_mail_sent_title'],
+                        ContextualFeedbackSeverity::OK,
                         true
                     );
                 } else {
                     $message = GeneralUtility::makeInstance(FlashMessage::class,
-                        $this->extSettings['welcome_mail_not_sent_text'],
-                        $this->extSettings['welcome_mail_not_sent_title'],
-                        AbstractMessage::ERROR,
+                        $extSettings['welcome_mail_not_sent_text'],
+                        $extSettings['welcome_mail_not_sent_title'],
+                        ContextualFeedbackSeverity::ERROR,
                         true
                     );
                 }
