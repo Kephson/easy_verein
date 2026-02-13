@@ -24,12 +24,6 @@ call_user_func(static function ($extKey = 'easy_verein') {
                 'config' => [
                     'type' => 'check',
                     'renderType' => 'checkboxToggle',
-                    'items' => [
-                        [
-                            0 => '',
-                            1 => '',
-                        ]
-                    ],
                     'default' => 0,
                 ]
             ],
@@ -37,10 +31,8 @@ call_user_func(static function ($extKey = 'easy_verein') {
                 'exclude' => true,
                 'label' => 'LLL:EXT:' . $extKey . '/Resources/Private/Language/locallang_db.xlf:fe_users.welcome_mail_sent',
                 'config' => [
-                    'type' => 'input',
-                    'renderType' => 'inputDateTime',
+                    'type' => 'datetime',
                     'size' => 16,
-                    'eval' => 'datetime,int',
                     'readOnly' => true,
                 ]
             ],

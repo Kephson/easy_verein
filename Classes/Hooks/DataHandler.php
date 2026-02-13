@@ -10,7 +10,6 @@ use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExis
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\DataHandling\DataHandler as CoreDataHandler;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
-use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\SingletonInterface;
@@ -36,6 +35,10 @@ class DataHandler implements SingletonInterface
      * the extension key
      */
     const EXTKEY = 'easy_verein';
+
+    public function __construct(private readonly FlashMessageService $flashMessageService)
+    {
+    }
 
     /**
      * check if there should be written special fields
@@ -74,7 +77,7 @@ class DataHandler implements SingletonInterface
                         true
                     );
                 }
-                $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
+                $flashMessageService = $this->flashMessageService;
                 $messageQueue = $flashMessageService->getMessageQueueByIdentifier();
                 $messageQueue->addMessage($message);
                 $fieldArray['welcome_mail'] = 0;
