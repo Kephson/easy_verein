@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace EHAERER\EasyVerein\Command;
 
-use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Driver\Exception as DbalDriverException;
+use Doctrine\DBAL\Exception;
+use Doctrine\DBAL\ParameterType;
 use EHAERER\EasyVerein\Service\WelcomeEmail;
 use EHAERER\EasyVerein\Utility\ApiUtility;
 use GuzzleHttp\Exception\GuzzleException;
@@ -24,7 +25,6 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\Exception;
 
 /**
  * This file is part of the "Manage the members of the society" Extension for TYPO3 CMS.
@@ -32,7 +32,7 @@ use TYPO3\CMS\Extbase\Object\Exception;
  * For the full copyright and license information, please read the
  * LICENSE.txt file that was distributed with this source code.
  *
- * (c) 2022-2024 Ephraim Härer <mail@ephra.im>, EPHRA.IM
+ * (c) 2022-2026 Ephraim Härer <mail@ephra.im>, EPHRA.IM
  *
  * -- Example with ddev local --
  * Initial:
@@ -153,14 +153,14 @@ class SyncFeUser extends Command
      * @param InputInterface $input
      * @param OutputInterface $output
      * @return int error code
-     * @throws DBALException
+     * @throws DbalDriverException
      * @throws Exception
      * @throws ExtensionConfigurationExtensionNotConfiguredException
      * @throws ExtensionConfigurationPathDoesNotExistException
      * @throws GuzzleException
      * @throws InvalidPasswordHashException
+     * @throws SiteNotFoundException
      * @throws TransportExceptionInterface
-     * @throws DbalDriverException
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -301,8 +301,8 @@ class SyncFeUser extends Command
      * if email address is not the same, log it to the profile
      *
      * @return int
-     * @throws DBALException
      * @throws DbalDriverException
+     * @throws Exception
      */
     private function initiallyCompareMembers(): int
     {
@@ -318,15 +318,14 @@ class SyncFeUser extends Command
                 $memberNo = trim((string)$r['membershipNumber']);
                 $easyVereinPk = $r['id'];
                 $evEmail = $r['contactDetails']['privateEmail'];
-                $user = $queryBuilder->resetQueryParts()->select('uid', 'username', 'email')
+                $user = $queryBuilder->select('uid', 'username', 'email')
                     ->from($tableName)
                     ->where(
                         $queryBuilder->expr()->eq('username', $queryBuilder->createNamedParameter($memberNo))
-                    )->execute()->fetchAssociative();
+                    )->executeQuery()->fetchAllAssociative();
                 if ($user) {
-                    $update = $queryBuilder->resetQueryParts()
-                        ->update($tableName)
-                        ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($user['uid'], PDO::PARAM_INT)))
+                    $update = $queryBuilder->update($tableName)
+                        ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($user['uid'], ParameterType::INTEGER)))
                         ->set('easyverein_pk', $easyVereinPk)
                         ->executeStatement();
                     if (!empty($evEmail) && $evEmail !== $user['email']) {
@@ -346,11 +345,11 @@ class SyncFeUser extends Command
      * Sync members of easyVerein with the fe_user database
      *
      * @return array
-     * @throws DBALException
      * @throws InvalidPasswordHashException
      * @throws TransportExceptionInterface
      * @throws SiteNotFoundException
      * @throws DbalDriverException
+     * @throws Exception
      */
     private function syncronizeMembers(): array
     {
@@ -390,17 +389,17 @@ class SyncFeUser extends Command
                 if ($deleted === 0) {
                     $evUserGroup = $this->getEvUserGroups($r);
                 }
-                $user = $queryBuilder->resetQueryParts()->select('uid', 'username', 'email', 'easyverein_pk', 'usergroup')
+                $user = $queryBuilder->select('uid', 'username', 'email', 'easyverein_pk', 'usergroup')
                     ->from($tableName)
                     ->where(
-                        $queryBuilder->expr()->eq('easyverein_pk', $queryBuilder->createNamedParameter($easyVereinPk, PDO::PARAM_INT))
-                    )->execute()->fetchAssociative();
+                        $queryBuilder->expr()->eq('easyverein_pk', $queryBuilder->createNamedParameter($easyVereinPk, ParameterType::INTEGER))
+                    )->executeQuery()->fetchAssociative();
 
                 if ($user && isset($user['uid'])) {
                     $userGroup = $this->mergeUsergroups($evUserGroup, $user['usergroup']);
-                    $update = $queryBuilder->resetQueryParts()
+                    $update = $queryBuilder
                         ->update($tableName)
-                        ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($user['uid'], PDO::PARAM_INT)))
+                        ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($user['uid'], ParameterType::INTEGER)))
                         ->set('easyverein_pk', $easyVereinPk)
                         ->set('email', $evEmail)
                         ->set('name', $name)
@@ -444,7 +443,7 @@ class SyncFeUser extends Command
                         'pid' => $this->extSettings['typo3_default_user_pid'],
                         'cruser_id' => 1,
                     ];
-                    $insert = $queryBuilder->resetQueryParts()->insert($tableName)->values($newUser)->executeStatement();
+                    $insert = $queryBuilder->insert($tableName)->values($newUser)->executeStatement();
                     if ($insert === 1) {
                         $return['addedMembers']++;
                         if ($deleted === 1) {
@@ -452,7 +451,7 @@ class SyncFeUser extends Command
                         } elseif ($this->extSettings['typo3_send_welcome_email']) {
                             $mailSent = WelcomeEmail::sendWelcomeEmail($newUser, $this->extSettings);
                             if ($mailSent) {
-                                $queryBuilder->resetQueryParts()->update($tableName, 'f')
+                                $queryBuilder->update($tableName, 'f')
                                     ->where($queryBuilder->expr()->eq('f.username', $queryBuilder->createNamedParameter($memberNo)))
                                     ->set('f.welcome_mail_sent', time())
                                     ->executeStatement();
@@ -527,8 +526,8 @@ class SyncFeUser extends Command
      * @param int $limit
      *
      * @return void
-     * @throws GuzzleException|DBALException
-     * @throws DbalDriverException
+     * @throws Exception
+     * @throws GuzzleException
      */
     private function loadUserGroups(int $limit = 100): void
     {
@@ -549,11 +548,11 @@ class SyncFeUser extends Command
                     if (isset($g['short'])) {
                         $evGroupId = $g['id'];
                         $evGroupShort = $g['short'];
-                        $group = $queryBuilder->resetQueryParts()->select('uid', 'title', 'easyverein_g_short')
+                        $group = $queryBuilder->select('uid', 'title', 'easyverein_g_short')
                             ->from($tableName)
                             ->where(
                                 $queryBuilder->expr()->eq('easyverein_g_short', $queryBuilder->createNamedParameter($evGroupShort))
-                            )->execute()->fetchAssociative();
+                            )->executeQuery()->fetchAssociative();
                         if ($group && isset($group['uid'])) {
                             $this->memberGroups[$evGroupId] = $group['uid'];
                             $this->oldMemberGroups[$group['uid']] = $g['short'];
