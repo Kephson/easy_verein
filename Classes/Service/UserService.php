@@ -17,7 +17,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * For the full copyright and license information, please read the
  * LICENSE.txt file that was distributed with this source code.
  *
- * (c) 2023-2026 Ephraim Härer <mail@ephra.im>, EPHRA.IM
+ * (c) 2023-2024 Ephraim Härer <mail@ephra.im>, EPHRA.IM
  */
 
 /**
