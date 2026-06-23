@@ -21,6 +21,6 @@ It allows to synchronize the members within an association with the TYPO3 fronte
 
 **Pre-requisites**
 
-- TYPO3 CMS in version 13.4 is needed
+- TYPO3 CMS in version 11.5 is needed
 - TYPO3 scheduler is needed: typo3/cms-scheduler
 - TYPO3 frontend login is needed: typo3/cms-felogin
