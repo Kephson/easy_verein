@@ -1,7 +1,7 @@
-# cat=easyVerein; type=string; label=Initial easyVerein API bearer token
+# cat=easyVerein; type=string; label=easyVerein API Token
 easy_verein_api_token =
 # cat=easyVerein; type=string; label=easyVerein API URI (without ending slash)
-easy_verein_api_uri = https://easyverein.com/api/latest
+easy_verein_api_uri = https://easyverein.com/api/stable
 # cat=easyVerein; type=integer; label=Default request limit of queries
 easy_verein_request_limit = 100
 # cat=typo3; type=integer; label=Default group id of TYPO3 frontend users
