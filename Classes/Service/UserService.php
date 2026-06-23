@@ -29,7 +29,7 @@ class UserService
     /**
      * the extension key
      */
-    private const ExtKey = 'easy_verein';
+    const EXTKEY = 'easy_verein';
 
     /**
      * Extension settings
@@ -38,7 +38,7 @@ class UserService
     private array $extSettings = [];
 
     /**
-     * API Token
+     * API token to use
      * @var string
      */
     private string $token = '';
@@ -54,8 +54,9 @@ class UserService
      */
     public function getUserData(string $easyVereinPk): array
     {
-        $this->extSettings = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get(self::ExtKey);
-        $this->token = ApiUtility::getToken($this->extSettings);
+        $this->extSettings = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get(self::EXTKEY);
+        $this->token = $this->extSettings['easy_verein_api_token'];
+
         return $this->getMemberData($easyVereinPk);
     }
 
@@ -70,7 +71,7 @@ class UserService
         $allowedContactFields = explode(',', $this->extSettings['easy_verein_contact_fields']);
         $userData = [];
         $uri = $this->extSettings['easy_verein_api_uri'] . '/' . 'member/' . $easyVereinPk;
-        $member = ApiUtility::getApiResults($uri, $this->token, $this->extSettings);
+        $member = ApiUtility::getApiResults($uri, $this->token);
 
         if (isset($member['contactDetails'])) {
             foreach ($allowedMemberFields as $f) {
@@ -82,7 +83,7 @@ class UserService
                     }
                 }
             }
-            $contactDetails = ApiUtility::getApiResults($member['contactDetails'], $this->token, $this->extSettings);
+            $contactDetails = ApiUtility::getApiResults($member['contactDetails'], $this->token);
             if ($contactDetails) {
                 foreach ($allowedContactFields as $f) {
                     if (isset($contactDetails[$f])) {

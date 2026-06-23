@@ -50,7 +50,7 @@ class SyncFeUser extends Command
     /**
      * the extension key
      */
-    private const ExtKey = 'easy_verein';
+    const EXTKEY = 'easy_verein';
 
     /**
      * Extension settings
@@ -59,7 +59,13 @@ class SyncFeUser extends Command
     private array $extSettings = [];
 
     /**
-     * API Token
+     * Command line options
+     * @var array
+     */
+    private array $options = [];
+
+    /**
+     * API token to use
      * @var string
      */
     private string $token = '';
@@ -106,7 +112,7 @@ class SyncFeUser extends Command
                 'token',
                 't',
                 InputArgument::OPTIONAL,
-                'Optional given easyVerein API token'
+                'easyVerein API token'
             )->addOption(
                 'limit',
                 'l',
@@ -158,24 +164,24 @@ class SyncFeUser extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->extSettings = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get(self::ExtKey);
-        $options = $input->getOptions();
+        $this->extSettings = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get(self::EXTKEY);
+        $this->options = $input->getOptions();
         $this->output = $output;
 
-        if (isset($options['token']) && !empty($options['token'])) {
-            $this->token = $options['token'];
+        if (isset($this->options['token']) && !empty($this->options['token'])) {
+            $this->token = $this->options['token'];
         } else {
-            $this->token = ApiUtility::getToken($this->extSettings);
+            $this->token = $this->extSettings['easy_verein_api_token'];
         }
-        if (isset($options['print']) && (int)$options['print'] === 1) {
+        if (isset($this->options['print']) && (int)$this->options['print'] === 1) {
             $this->printout = true;
         }
-        if (isset($options['limit']) && !empty($options['limit'])) {
-            $limit = (int)$options['limit'];
+        if (isset($this->options['limit']) && !empty($this->options['limit'])) {
+            $limit = (int)$this->options['limit'];
         } else {
             $limit = (int)$this->extSettings['easy_verein_request_limit'];
         }
-        if (isset($options['syncAll']) && (int)$options['syncAll'] === 1) {
+        if (isset($this->options['syncAll']) && (int)$this->options['syncAll'] === 1) {
             $this->syncAll = true;
         } else {
             $this->syncAll = false;
@@ -188,7 +194,7 @@ class SyncFeUser extends Command
             $output->writeln('Number of members loaded: ' . count($this->members));
             $this->printDifferentEmail();
         }
-        if (isset($options['initial']) && (int)$options['initial'] === 1) {
+        if (isset($this->options['initial']) && (int)$this->options['initial'] === 1) {
             $initialComparedMembers = $this->initiallyCompareMembers();
             if ($this->printout) {
                 $output->writeln('Initially compared members: ' . $initialComparedMembers);
@@ -202,7 +208,7 @@ class SyncFeUser extends Command
                 $output->writeln('Deleted members: ' . $return['deletedMembers']);
             }
         }
-        if (isset($options['printMembers']) && (int)$options['printMembers'] === 1) {
+        if (isset($this->options['printMembers']) && (int)$this->options['printMembers'] === 1) {
             $this->printMembers();
         }
 
@@ -224,7 +230,7 @@ class SyncFeUser extends Command
             $uri = $next;
         }
 
-        $results = ApiUtility::getApiResults($uri, $this->token, $this->extSettings);
+        $results = ApiUtility::getApiResults($uri, $this->token);
 
         if (isset($results['results'])) {
             foreach ($results['results'] as $m) {
@@ -435,6 +441,7 @@ class SyncFeUser extends Command
                         'tstamp' => $tstamp,
                         'crdate' => $tstamp,
                         'pid' => $this->extSettings['typo3_default_user_pid'],
+                        'cruser_id' => 1,
                     ];
                     $insert = $queryBuilder->insert($tableName)->values($newUser)->executeStatement();
                     if ($insert === 1) {
@@ -444,9 +451,9 @@ class SyncFeUser extends Command
                         } elseif ($this->extSettings['typo3_send_welcome_email']) {
                             $mailSent = WelcomeEmail::sendWelcomeEmail($newUser, $this->extSettings);
                             if ($mailSent) {
-                                $queryBuilder->update($tableName)
-                                    ->where($queryBuilder->expr()->eq('username', $queryBuilder->createNamedParameter($memberNo)))
-                                    ->set('welcome_mail_sent', time())
+                                $queryBuilder->update($tableName, 'f')
+                                    ->where($queryBuilder->expr()->eq('f.username', $queryBuilder->createNamedParameter($memberNo)))
+                                    ->set('f.welcome_mail_sent', time())
                                     ->executeStatement();
                             }
                         }
@@ -526,7 +533,7 @@ class SyncFeUser extends Command
     {
         if (empty($this->memberGroups)) {
             $uri = $this->extSettings['easy_verein_api_uri'] . '/' . 'member-group/?limit=' . $limit;
-            $groups = ApiUtility::getApiResults($uri, $this->token, $this->extSettings);
+            $groups = ApiUtility::getApiResults($uri, $this->token);
             $tableName = 'fe_groups';
             if (isset($groups['results'])) {
                 /** @var QueryBuilder $queryBuilder */
