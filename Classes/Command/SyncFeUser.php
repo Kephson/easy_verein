@@ -145,7 +145,9 @@ class SyncFeUser extends Command
      *
      * @param InputInterface $input
      * @param OutputInterface $output
+     *
      * @return int error code
+     *
      * @throws DbalDriverException
      * @throws Exception
      * @throws ExtensionConfigurationExtensionNotConfiguredException
@@ -193,7 +195,7 @@ class SyncFeUser extends Command
                 $output->writeln('Initially compared members: ' . $initialComparedMembers);
             }
         } else {
-            $return = $this->syncronizeMembers();
+            $return = $this->synchronizeMembers();
             if ($this->printout) {
                 $output->writeln('------ Synchronization done ------');
                 $output->writeln('Updated members: ' . $return['syncronizedMembers']);
@@ -343,7 +345,7 @@ class SyncFeUser extends Command
      * @throws DbalDriverException
      * @throws Exception
      */
-    private function syncronizeMembers(): array
+    private function synchronizeMembers(): array
     {
         $return = [
             'syncronizedMembers' => 0,
