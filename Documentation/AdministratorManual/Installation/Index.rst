@@ -27,5 +27,5 @@ You can get the latest version from git by using the git command:
 
 .. important::
 
-   The main branch supports TYPO3 11.5 only.
+   The main branch supports TYPO3 13.4 only.
 

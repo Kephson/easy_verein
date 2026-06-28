@@ -12,7 +12,7 @@ use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * This file is part of the "Manage the members of the society" Extension for TYPO3 CMS.
+ * This file is part of the "easy_verein" extension for TYPO3 CMS.
  *
  * For the full copyright and license information, please read the
  * LICENSE.txt file that was distributed with this source code.
@@ -72,7 +72,7 @@ class UserService
         $uri = $this->extSettings['easy_verein_api_uri'] . '/' . 'member/' . $easyVereinPk;
         $member = ApiUtility::getApiResults($uri, $this->token, $this->extSettings);
 
-        if (isset($member['contactDetails'])) {
+        if (isset($member['contact_details'])) {
             foreach ($allowedMemberFields as $f) {
                 if (isset($member[$f])) {
                     if (stripos($f, 'Date') === false) {
@@ -82,7 +82,7 @@ class UserService
                     }
                 }
             }
-            $contactDetails = ApiUtility::getApiResults($member['contactDetails'], $this->token, $this->extSettings);
+            $contactDetails = ApiUtility::getApiResults($member['contact_details'], $this->token, $this->extSettings);
             if ($contactDetails) {
                 foreach ($allowedContactFields as $f) {
                     if (isset($contactDetails[$f])) {

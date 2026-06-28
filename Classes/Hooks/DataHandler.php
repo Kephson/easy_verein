@@ -18,7 +18,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use EHAERER\EasyVerein\Service\WelcomeEmail;
 
 /**
- * This file is part of the "Manage the members of the society" Extension for TYPO3 CMS.
+ * This file is part of the "easy_verein" extension for TYPO3 CMS.
  *
  * For the full copyright and license information, please read the
  * LICENSE.txt file that was distributed with this source code.
@@ -59,7 +59,6 @@ class DataHandler implements SingletonInterface
         if ($table === 'fe_users') {
             if (isset($fieldArray['welcome_mail']) && (int)$fieldArray['welcome_mail'] === 1) {
 
-                $extSettings = [];
                 $extSettings = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get(self::EXTKEY);
 
                 if (WelcomeEmail::sendWelcomeEmail($fieldArray, $extSettings)) {

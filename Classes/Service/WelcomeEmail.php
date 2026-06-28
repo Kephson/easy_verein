@@ -13,7 +13,7 @@ use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * This file is part of the "Manage the members of the society" Extension for TYPO3 CMS.
+ * This file is part of the "easy_verein" extension for TYPO3 CMS.
  *
  * For the full copyright and license information, please read the
  * LICENSE.txt file that was distributed with this source code.

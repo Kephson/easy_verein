@@ -1,9 +1,11 @@
 <?php
-/** @noinspection PhpFullyQualifiedNameUsageInspection */
+
+use EHAERER\EasyVerein\Middleware\EasyVereinMiddleware;
+
 return [
     'frontend' => [
         'easyverein-api' => [
-            'target' => \EHAERER\EasyVerein\Middleware\EasyVereinMiddleware::class,
+            'target' => EasyVereinMiddleware::class,
             'before' => [
                 'typo3/cms-redirects/redirecthandler',
             ],

@@ -10,7 +10,6 @@ use Doctrine\DBAL\ParameterType;
 use EHAERER\EasyVerein\Service\WelcomeEmail;
 use EHAERER\EasyVerein\Utility\ApiUtility;
 use GuzzleHttp\Exception\GuzzleException;
-use PDO;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -27,7 +26,7 @@ use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * This file is part of the "Manage the members of the society" Extension for TYPO3 CMS.
+ * This file is part of the "easy_verein" extension for TYPO3 CMS.
  *
  * For the full copyright and license information, please read the
  * LICENSE.txt file that was distributed with this source code.
@@ -217,8 +216,8 @@ class SyncFeUser extends Command
      */
     private function getMembers(int $limit = 100, string $next = ''): void
     {
-        $query = '{id,contactDetails{id,firstName,familyName,name,privateEmail},joinDate,resignationDate,memberGroups{memberGroup{id,short,name}},membershipNumber}';
-        $ordering = '-membershipNumber';
+        $query = '{id,contact_details{id,first_name,family_name,name,private_email},join_date,resignation_date,member_groups{member_group{id,short,name}},membership_number}';
+        $ordering = '-membership_number';
         $uri = $this->extSettings['easy_verein_api_uri'] . '/' . 'member?query=' . $query . '&limit=' . $limit . '&ordering=' . $ordering;
         if (!empty($next)) {
             $uri = $next;
@@ -249,12 +248,12 @@ class SyncFeUser extends Command
         $d = " | ";
         if ($this->members) {
             foreach ($this->members as $r) {
-                $email = $r['contactDetails']['privateEmail'] ?: " - ";
+                $email = $r['contact_details']['private_email'] ?: " - ";
                 $joinDate = '';
-                if ($r['joinDate']) {
-                    $joinDate = date('d.m.Y', strtotime($r['joinDate']));
+                if ($r['join_date']) {
+                    $joinDate = date('d.m.Y', strtotime($r['join_date']));
                 }
-                $text = $r['id'] . $d . $r['membershipNumber'] . $d . $joinDate . $d . $r['contactDetails']['name'] . $d . $email;
+                $text = $r['id'] . $d . $r['membership_number'] . $d . $joinDate . $d . $r['contact_details']['name'] . $d . $email;
                 $this->output->writeln($text);
             }
         }
@@ -277,12 +276,12 @@ class SyncFeUser extends Command
                         $this->output->writeln('Found following different E-Mail addresses:');
                     }
                     $typo3Email = $r['typo3Email'];
-                    $email = $r['contactDetails']['privateEmail'];
+                    $email = $r['contact_details']['private_email'];
                     $joinDate = '';
-                    if ($r['joinDate']) {
-                        $joinDate = date('d.m.Y', strtotime($r['joinDate']));
+                    if ($r['join_date']) {
+                        $joinDate = date('d.m.Y', strtotime($r['join_date']));
                     }
-                    $text = $r['id'] . $d . $r['membershipNumber'] . $d . $joinDate . $d . $email . $d . 'TYPO3-E-Mail: ' . $typo3Email;
+                    $text = $r['id'] . $d . $r['membership_number'] . $d . $joinDate . $d . $email . $d . 'TYPO3-E-Mail: ' . $typo3Email;
                     $this->output->writeln($text);
                     $i++;
                 }
@@ -295,7 +294,6 @@ class SyncFeUser extends Command
      * if email address is not the same, log it to the profile
      *
      * @return int
-     * @throws DbalDriverException
      * @throws Exception
      */
     private function initiallyCompareMembers(): int
@@ -309,9 +307,9 @@ class SyncFeUser extends Command
 
         if ($this->members) {
             foreach ($this->members as $k => $r) {
-                $memberNo = trim((string)$r['membershipNumber']);
+                $memberNo = trim((string)$r['membership_number']);
                 $easyVereinPk = $r['id'];
-                $evEmail = $r['contactDetails']['privateEmail'];
+                $evEmail = $r['contact_details']['private_email'];
                 $user = $queryBuilder->select('uid', 'username', 'email')
                     ->from($tableName)
                     ->where(
@@ -360,21 +358,21 @@ class SyncFeUser extends Command
 
         if ($this->members) {
             foreach ($this->members as $r) {
-                $memberNo = trim((string)$r['membershipNumber']);
+                $memberNo = trim((string)$r['membership_number']);
                 $easyVereinPk = $r['id'];
-                $evEmail = $r['contactDetails']['privateEmail'];
-                $name = $r['contactDetails']['name'];
-                $firstName = $r['contactDetails']['firstName'];
-                $familyName = $r['contactDetails']['familyName'];
+                $evEmail = $r['contact_details']['private_email'];
+                $name = $r['contact_details']['name'];
+                $firstName = $r['contact_details']['first_name'];
+                $familyName = $r['contact_details']['family_name'];
                 $deleted = 0;
                 $joinDate = 0;
                 $resignationDate = 0;
                 $tstamp = time();
-                if ($r['joinDate']) {
-                    $joinDate = strtotime($r['joinDate']);
+                if ($r['join_date']) {
+                    $joinDate = strtotime($r['join_date']);
                 }
-                if ($r['resignationDate']) {
-                    $resignationDate = strtotime($r['resignationDate']);
+                if ($r['resignation_date']) {
+                    $resignationDate = strtotime($r['resignation_date']);
                     if ($resignationDate < time()) {
                         $deleted = 1;
                     }
@@ -470,10 +468,10 @@ class SyncFeUser extends Command
     {
         $userGroup = $this->extSettings['typo3_default_group_id'];
 
-        if (isset($member['memberGroups']) && is_array($member['memberGroups'])) {
-            foreach ($member['memberGroups'] as $g) {
-                if (isset($g['memberGroup']['id'], $this->memberGroups[$g['memberGroup']['id']])) {
-                    $userGroup .= ',' . $this->memberGroups[$g['memberGroup']['id']];
+        if (isset($member['member_groups']) && is_array($member['member_groups'])) {
+            foreach ($member['member_groups'] as $g) {
+                if (isset($g['member_group']['id'], $this->memberGroups[$g['member_group']['id']])) {
+                    $userGroup .= ',' . $this->memberGroups[$g['member_group']['id']];
                 }
             }
         }
@@ -516,16 +514,14 @@ class SyncFeUser extends Command
     /**
      * Get user groups to set in TYPO3
      *
-     * @param int $limit
-     *
      * @return void
      * @throws Exception
      * @throws GuzzleException
      */
-    private function loadUserGroups(int $limit = 100): void
+    private function loadUserGroups(): void
     {
         if (empty($this->memberGroups)) {
-            $uri = $this->extSettings['easy_verein_api_uri'] . '/' . 'member-group/?limit=' . $limit;
+            $uri = $this->extSettings['easy_verein_api_uri'] . '/' . 'member-group/?limit=' . 100;
             $groups = ApiUtility::getApiResults($uri, $this->token, $this->extSettings);
             $tableName = 'fe_groups';
             if (isset($groups['results'])) {

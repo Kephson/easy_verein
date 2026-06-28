@@ -18,5 +18,8 @@ All Changes
 This is a list of all changes in this release: ::
 
 - initial release for TYPO3 13.4
-- added possibility to work with latest easyVerein API
-- automatic refreshing of token
+- added possibility to work with latest easyVerein API by default
+- automatic refreshing of token required in easyVerein API
+- easyVerein latest documentation: https://easyverein.com/api/latest/documentation#/
+- refactored and cleaned up extension for TYPO3 13.4
+- switched to easyVerein API v3.0 or latest - no support for earlier versions!

@@ -14,6 +14,16 @@ use Psr\Http\Server\RequestHandlerInterface;
 use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotConfiguredException;
 use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
+
+/**
+ * This file is part of the "easy_verein" extension for TYPO3 CMS.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ * (c) 2023-2026 Ephraim Härer <mail@ephra.im>, EPHRA.IM
+ */
 
 /**
  * EasyVereinMiddleware

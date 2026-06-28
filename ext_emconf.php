@@ -1,7 +1,7 @@
 <?php /** @noinspection PhpUndefinedVariableInspection */
 
 /* * *************************************************************
- * Extension Manager/Repository config file for ext "discourse_connect".
+ * Extension Manager/Repository config file for ext "easy_verein".
  *
  * Manual updates:
  * Only the data in the array - everything else is removed by next

@@ -21,7 +21,7 @@ Tab: Easyverein
 ^^^^^^^^^^^^^^^
 
 - Set the API token; it is needed to connect with your easyVerein instance
-- Optional: set a specific API url if not the default one should be used (default: https://easyverein.com/api/stable)
+- Optional: set a specific API url if not the default one should be used (default: https://easyverein.com/api/latest)
 - Optional: set the default request limit of queries against the API (default: 100)
 - Optional: configure allowed fields in easyVerein member model (default: joinDate,membershipNumber)
 - Optional: allowed fields in easyVerein contact model (default: bankAccountOwner,bic,iban,methodOfPayment,methodOfPaymentName,sepaDate,street,zip,city,country,salutation,name,familyName,firstName,mobilePhone,privateEmail,privatePhone)
