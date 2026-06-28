@@ -223,7 +223,7 @@ class SyncFeUser extends Command
      */
     private function getMembers(int $limit = 100, string $next = ''): void
     {
-        $query = '{id,contact_details{id,first_name,family_name,name,private_email},join_date,resignation_date,member_groups{member_group{id,short,name}},membership_number}';
+        $query = '{id,contact_details{id,salutation,first_name,family_name,name,private_email},join_date,resignation_date,member_groups{member_group{id,short,name}},membership_number}';
         $uri = $this->extSettings['easy_verein_api_uri'] . '/' . 'member?query=' . $query . '&limit=' . $limit;
         if (!empty($next)) {
             $uri = $next;
@@ -373,6 +373,7 @@ class SyncFeUser extends Command
                 $joinDate = 0;
                 $resignationDate = 0;
                 $tstamp = time();
+                $salutation = ApiUtility::getSalutation($r['contact_details']['salutation'] ?? '');
                 if ($r['join_date']) {
                     $joinDate = strtotime($r['join_date']);
                 }
@@ -397,7 +398,7 @@ class SyncFeUser extends Command
                 if ($user && isset($user['uid'])) {
                     $queryBuilder = $connection->createQueryBuilder();
                     $userGroup = $this->mergeUsergroups($evUserGroup, $user['usergroup']);
-                    $update = $queryBuilder
+                    $queryBuilder
                         ->update($tableName)
                         ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($user['uid'], ParameterType::INTEGER)))
                         ->set('easyverein_pk', $easyVereinPk)
@@ -409,8 +410,11 @@ class SyncFeUser extends Command
                         ->set('starttime', $joinDate)
                         ->set('endtime', $resignationDate)
                         ->set('deleted', $deleted)
-                        ->set('tstamp', $tstamp)
-                        ->executeStatement();
+                        ->set('tstamp', $tstamp);
+                    if ($salutation !== false) {
+                        $queryBuilder->set('gender', $salutation);
+                    }
+                    $update = $queryBuilder->executeStatement();
                     if ($update === 1) {
                         $return['syncronizedMembers']++;
                         if ($deleted === 1) {
@@ -442,6 +446,9 @@ class SyncFeUser extends Command
                         'crdate' => $tstamp,
                         'pid' => $this->extSettings['typo3_default_user_pid'],
                     ];
+                    if ($salutation !== false) {
+                        $newUser['gender'] = $salutation;
+                    }
                     $queryBuilder = $connection->createQueryBuilder();
                     $insert = $queryBuilder->insert($tableName)->values($newUser)->executeStatement();
                     if ($insert === 1) {

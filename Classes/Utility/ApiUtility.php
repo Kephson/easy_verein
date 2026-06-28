@@ -7,6 +7,7 @@ namespace EHAERER\EasyVerein\Utility;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use TYPO3\CMS\Core\Registry;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -86,6 +87,34 @@ class ApiUtility
             $registry = GeneralUtility::makeInstance(Registry::class);
             $registry->set('easy_verein', 'api_token', $newTokenData['Bearer']);
         }
+    }
+
+    /**
+     * Get the salutation if EXT:femanager is installed
+     * @param string $salutation
+     * @return bool|int
+     */
+    public static function getSalutation(string $salutation): bool|int
+    {
+        if (ExtensionManagementUtility::isLoaded('femanager')) {
+            $value = 2;
+            switch ($salutation) {
+                case 'Mr':
+                case 'Herr':
+                case 'Mr.':
+                    $value = 0;
+                    break;
+                case 'Mrs':
+                case 'Mrs.':
+                case 'Ms.':
+                case 'Ms':
+                case 'Frau':
+                    $value = 1;
+                    break;
+            }
+            return $value;
+        }
+        return false;
     }
 
 }
