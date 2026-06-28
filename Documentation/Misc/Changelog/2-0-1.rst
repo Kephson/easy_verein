@@ -1,0 +1,20 @@
+2.0.1 - 28 of June 2026
+=======================
+
+.. include:: ../../Includes.txt
+
+.. only:: html
+
+.. contents::
+        :local:
+        :depth: 3
+
+
+Important changes
+-----------------
+
+All Changes
+-----------
+This is a list of all changes in this release: ::
+
+- added possibility to write gender to database if EXT:femanager is installed
