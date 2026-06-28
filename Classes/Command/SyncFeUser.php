@@ -95,6 +95,13 @@ class SyncFeUser extends Command
      */
     private bool $syncAll = true;
 
+    public function __construct(
+        private readonly ConnectionPool $connectionPool,
+    )
+    {
+        parent::__construct();
+    }
+
     /**
      * Configure the command by defining the name, options and arguments
      */
@@ -145,9 +152,7 @@ class SyncFeUser extends Command
      *
      * @param InputInterface $input
      * @param OutputInterface $output
-     *
      * @return int error code
-     *
      * @throws DbalDriverException
      * @throws Exception
      * @throws ExtensionConfigurationExtensionNotConfiguredException
@@ -219,8 +224,7 @@ class SyncFeUser extends Command
     private function getMembers(int $limit = 100, string $next = ''): void
     {
         $query = '{id,contact_details{id,first_name,family_name,name,private_email},join_date,resignation_date,member_groups{member_group{id,short,name}},membership_number}';
-        $ordering = '-membership_number';
-        $uri = $this->extSettings['easy_verein_api_uri'] . '/' . 'member?query=' . $query . '&limit=' . $limit . '&ordering=' . $ordering;
+        $uri = $this->extSettings['easy_verein_api_uri'] . '/' . 'member?query=' . $query . '&limit=' . $limit;
         if (!empty($next)) {
             $uri = $next;
         }
@@ -234,7 +238,7 @@ class SyncFeUser extends Command
             if ($this->printout) {
                 $this->output->writeln('Members: ' . count($this->members));
             }
-            if (isset($results['next']) && !empty($results['next']) && $this->syncAll) {
+            if (!empty($results['next']) && $this->syncAll) {
                 $this->getMembers($limit, $results['next']);
             }
         }
@@ -303,12 +307,12 @@ class SyncFeUser extends Command
         $initialComparedMembers = 0;
 
         $tableName = 'fe_users';
-        /** @var QueryBuilder $queryBuilder */
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($tableName);
-        $queryBuilder->getRestrictions()->removeAll();
+        $connection = $this->connectionPool->getConnectionForTable($tableName);
 
         if ($this->members) {
             foreach ($this->members as $k => $r) {
+                $queryBuilder = $connection->createQueryBuilder();
+                $queryBuilder->getRestrictions()->removeAll();
                 $memberNo = trim((string)$r['membership_number']);
                 $easyVereinPk = $r['id'];
                 $evEmail = $r['contact_details']['private_email'];
@@ -318,6 +322,7 @@ class SyncFeUser extends Command
                         $queryBuilder->expr()->eq('username', $queryBuilder->createNamedParameter($memberNo))
                     )->executeQuery()->fetchAllAssociative();
                 if ($user) {
+                    $queryBuilder = $connection->createQueryBuilder();
                     $update = $queryBuilder->update($tableName)
                         ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($user['uid'], ParameterType::INTEGER)))
                         ->set('easyverein_pk', $easyVereinPk)
@@ -354,9 +359,7 @@ class SyncFeUser extends Command
         ];
 
         $tableName = 'fe_users';
-        /** @var QueryBuilder $queryBuilder */
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($tableName);
-        $queryBuilder->getRestrictions()->removeAll();
+        $connection = $this->connectionPool->getConnectionForTable($tableName);
 
         if ($this->members) {
             foreach ($this->members as $r) {
@@ -383,13 +386,16 @@ class SyncFeUser extends Command
                 if ($deleted === 0) {
                     $evUserGroup = $this->getEvUserGroups($r);
                 }
+                $queryBuilder = $connection->createQueryBuilder();
+                $queryBuilder->getRestrictions()->removeAll();
                 $user = $queryBuilder->select('uid', 'username', 'email', 'easyverein_pk', 'usergroup')
                     ->from($tableName)
                     ->where(
-                        $queryBuilder->expr()->eq('easyverein_pk', $queryBuilder->createNamedParameter($easyVereinPk, ParameterType::INTEGER))
+                        $queryBuilder->expr()->eq('easyverein_pk', $queryBuilder->createNamedParameter($easyVereinPk))
                     )->executeQuery()->fetchAssociative();
 
                 if ($user && isset($user['uid'])) {
+                    $queryBuilder = $connection->createQueryBuilder();
                     $userGroup = $this->mergeUsergroups($evUserGroup, $user['usergroup']);
                     $update = $queryBuilder
                         ->update($tableName)
@@ -416,7 +422,7 @@ class SyncFeUser extends Command
                         $text = $memberNo . $d . 'TYPO3 ID: ' . $user['uid'] . $d . $user['email'];
                         $this->output->writeln($text);
                     }
-                } elseif (!empty($evEmail) && !empty($memberNo)) {
+                } elseif (!empty($evEmail) && !empty($memberNo) && $deleted === 0) {
                     $password = hash('sha256', uniqid((string)$easyVereinPk, true));
                     $hashInstance = GeneralUtility::makeInstance(PasswordHashFactory::class)->getDefaultHashInstance('FE');
                     $hashedPassword = $hashInstance->getHashedPassword($password);
@@ -436,12 +442,11 @@ class SyncFeUser extends Command
                         'crdate' => $tstamp,
                         'pid' => $this->extSettings['typo3_default_user_pid'],
                     ];
+                    $queryBuilder = $connection->createQueryBuilder();
                     $insert = $queryBuilder->insert($tableName)->values($newUser)->executeStatement();
                     if ($insert === 1) {
                         $return['addedMembers']++;
-                        if ($deleted === 1) {
-                            $return['deletedMembers']++;
-                        } elseif ($this->extSettings['typo3_send_welcome_email']) {
+                        if ($this->extSettings['typo3_send_welcome_email']) {
                             $mailSent = WelcomeEmail::sendWelcomeEmail($newUser, $this->extSettings);
                             if ($mailSent) {
                                 $queryBuilder->update($tableName)
@@ -527,9 +532,7 @@ class SyncFeUser extends Command
             $groups = ApiUtility::getApiResults($uri, $this->token, $this->extSettings);
             $tableName = 'fe_groups';
             if (isset($groups['results'])) {
-                /** @var QueryBuilder $queryBuilder */
-                $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($tableName);
-                $queryBuilder->getRestrictions()->removeAll();
+                $connection = $this->connectionPool->getConnectionForTable($tableName);
 
                 if ($this->printout) {
                     $this->output->writeln('------ Following groups found ------');
@@ -539,6 +542,8 @@ class SyncFeUser extends Command
                     if (isset($g['short'])) {
                         $evGroupId = $g['id'];
                         $evGroupShort = $g['short'];
+                        $queryBuilder = $connection->createQueryBuilder();
+                        $queryBuilder->getRestrictions()->removeAll();
                         $group = $queryBuilder->select('uid', 'title', 'easyverein_g_short')
                             ->from($tableName)
                             ->where(

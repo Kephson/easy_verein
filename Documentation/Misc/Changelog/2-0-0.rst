@@ -23,3 +23,5 @@ This is a list of all changes in this release: ::
 - easyVerein latest documentation: https://easyverein.com/api/latest/documentation#/
 - refactored and cleaned up extension for TYPO3 13.4
 - switched to easyVerein API v3.0 or latest - no support for earlier versions!
+- do not insert disabled members from easyverein to TYPO3
+- fixed and updated instantiation of queryBuilder when synchronizing against easyVerein, see https://www.derhansen.de/2023/10/the-pitfalls-of-reusing-typo3-querybuilder-analyzing-a-performance-bottleneck.html
