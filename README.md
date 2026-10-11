@@ -8,6 +8,8 @@ Please read the [documentation here](https://docs.typo3.org/p/ehaerer/easy-verei
 
 Find the latest API documentation of easyVerein here:
 - https://easyverein.com/api/latest/documentation#/
+- Version 2.0.* of this extension uses the API version 3.0 of easyVerein
 
 Find Github examples of the easyVerein API here:
 - https://github.com/SD-Software-Design-GmbH/easyVerein-API-Samples
+
